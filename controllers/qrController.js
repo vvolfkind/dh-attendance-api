@@ -28,7 +28,7 @@ const decode = (data) => {
 };
 
 const encode = async (data) => {
-    let encrypt = false;
+    let encrypt;
 
     try {
         encrypt = await cryptr.encrypt(JSON.stringify(data));

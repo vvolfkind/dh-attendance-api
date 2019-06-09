@@ -9,6 +9,14 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+    }, 
+    qrstring: {
+        type: String,
+        required: false,
+    },
+    role: {
+        type: Number,
+        required: true
     },
     date: {
         type: Date,

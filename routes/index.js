@@ -4,7 +4,6 @@ module.exports = (app, express) => {
     app.use(express.json());
 
     const v1 = require('./v1')(express);
-    
 
     app.use('/v1', v1);
 }
