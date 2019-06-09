@@ -42,7 +42,6 @@ const register = async (req, res) => {
         // }
         let role = 1;
 
-
         user = new User({ email, password, role });
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
@@ -103,7 +102,7 @@ const index = async (req, res) => {
 
 const show = async (req, res) => {
     let user;
-    
+
     try {
         user = await User.findById(req.query.id)
     } catch(err) {
