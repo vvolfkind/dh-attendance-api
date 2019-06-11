@@ -7,7 +7,7 @@ module.exports = (express) => {
 
     /**
      * 
-     * @route   POST api/users
+     * @route   POST v1/users
      * @desc    Register user
      * @access  Public
      * 
@@ -21,7 +21,7 @@ module.exports = (express) => {
 
     /**
      * 
-     * @route   GET api/users
+     * @route   GET v1/users
      * @desc    Retrieves users
      * @access  Private
      * 
@@ -30,7 +30,7 @@ module.exports = (express) => {
 
     /**
      * 
-     * @route   GET api/user/show
+     * @route   GET v1/user/show
      * @desc    Retrieves single user
      * @access  Private
      * 

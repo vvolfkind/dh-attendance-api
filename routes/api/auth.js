@@ -14,12 +14,7 @@ module.exports = (express) => {
      * @access  Public
      * 
      */
-    router.post('/',
-        [
-            check('email', 'Invalid Email').isEmail(),
-            check('password', 'Password is reqired').exists()
-        ], authController.authenticate
-    );
+    router.post('/', authController.authenticate);
 
     /**
      * 

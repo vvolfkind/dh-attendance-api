@@ -8,6 +8,45 @@ const User = require('../models/User');
 
 const cryptr = new Cryptr(process.env.CRYPTR);
 
+/**
+ * @param {Mongoose Schema} user 
+ * @param {string} expiryTime 
+ * @param {integer} clearanceLevel 
+ * @param {array} sites 
+ * @returns {json}
+ */
+const generateJsonData = (user, expiryTime, clearanceLevel, sites) => {
+    let json = {};
+
+    json.codeStatus = {
+        "id": user.id,
+        "expiryTime": expiryTime,
+        "prefix": process.env.QR_PREFIX
+    }
+
+    json.entity = {
+        "accessClearance": clearanceLevel,
+        "email": user.email,
+        "sites": sites
+    }
+
+    return json
+}
+/**
+ * Control de falsos registros. Si el email no se encuentra en el SGE,
+ * se borra el registro de la base de datos.
+ * @param {string} email
+ * @returns {integer} Schema deleted count
+ * 
+ */
+const dbControl = async (email) => {
+    let user = await User.findOne({ email });
+    if (user) {
+        let res = await User.remove({_id: user._id});
+        return res.deletedCount;
+    }
+}
+
 
 const register = async (req, res) => {
     const errors = validationResult(req);
@@ -23,45 +62,19 @@ const register = async (req, res) => {
         // Si el email existe, rebota
         let user = await User.findOne({ email });
         if (user) {
-            res.status(400).json({
-                errors: [{
-                    message: 'User already exists'
-                }]
-            });
+            res.status(400).json({ errors: [{ message: 'El email ya esta registrado en nuestra base de datos.' }] });
+            return false;
         }
 
-        // Validar contra el SGE
-
-        // let sgeUser = await SGEController.verify(email);
-        // if (!sgeUser) {
-        //     res.status(400).json({
-        //         errors: [{
-        //             message: "Can't find a user on SGE with that email"
-        //         }]
-        //     });
-        // }
         let role = 1;
 
         user = new User({ email, password, role });
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
+
         await user.save();
 
-        const jsonData = {
-            "data": {
-                "codeStatus": {
-                    "id": user.id,
-                    "expiryTime": 16443334433,
-                    "prefix": process.env.QR_PREFIX
-                },
-                "entity": {
-                    "accessClearance": 1,
-                    "email": user.email,
-                    "sites": [1]
-                }
-            }
-        };
-
+        const jsonData = generateJsonData(user, 1650000000, 1, [1, 2]);
         user.qrstring = await cryptr.encrypt(JSON.stringify(jsonData));
 
         await user.save();
@@ -75,7 +88,7 @@ const register = async (req, res) => {
         jwt.sign(
             payload, 
             process.env.JWT_SECRET, 
-            { expiresIn: 360000 }, 
+            { expiresIn: process.env.JWT_DURATION }, 
             (err, token) => {
                 if (err) throw err;
                 res.json({ token });

@@ -102,10 +102,8 @@ const renderQrRequest = async (req, res) => {
         respond(res, err);
     }
 
-    respond(res, {
-        direct: true,
-        data: svg_string
-    });
+    respond(res, { direct: true, data: svg_string });
+
 };
 
 module.exports = { 

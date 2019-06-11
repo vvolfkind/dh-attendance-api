@@ -9,14 +9,14 @@ module.exports = (express) => {
      * @desc    Encodes json body
      * @access  Private
      */
-    router.get('/encodeJson', qrController.encodeJsonBodyRequest)
+    router.get('/encodeJson', qrController.encodeJsonBodyRequest);
 
     /**
      * @route   GET api/encodeString
      * @desc    Encodes string
      * @access  Private
      */
-    router.get('/encodeString', qrController.encodeStringRequest)
+    router.get('/encodeString', qrController.encodeStringRequest);
 
     /**
      * FOR TESTING/DEVELOPEMENT ONLY
@@ -24,14 +24,14 @@ module.exports = (express) => {
      * @desc    Decrypts an encrypted string and returns a json response
      * @access  Private
      */
-    router.get('/decrypt', qrController.decryptRequestAndReturnJson)
+    router.get('/decrypt', qrController.decryptRequestAndReturnJson);
 
     /**
      * @route   GET api/renderQR
      * @desc    Renders a QR code on screen
-     * @access  Public
+     * @access  Private
      */
-    router.get('/renderQR', qrController.renderQrRequest)
+    router.get('/render', auth, qrController.renderQrRequest);
 
     return router;
 
