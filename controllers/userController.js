@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const Cryptr = require('cryptr');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator/check');
+const mailer = require('./mailingController').mailer
 
 const SGEController = require('./sgeController');
 const User = require('../models/User');
@@ -32,6 +33,7 @@ const generateJsonData = (user, expiryTime, clearanceLevel, sites) => {
 
     return json
 }
+
 /**
  * Control de falsos registros. Si el email no se encuentra en el SGE,
  * se borra el registro de la base de datos.
@@ -47,7 +49,6 @@ const dbControl = async (email) => {
     }
 }
 
-
 const register = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -62,7 +63,11 @@ const register = async (req, res) => {
         // Si el email existe, rebota
         let user = await User.findOne({ email });
         if (user) {
-            res.status(400).json({ errors: [{ message: 'El email ya esta registrado en nuestra base de datos.' }] });
+            res.status(400).json({ 
+                errors: [{ 
+                    message: 'El email ya esta registrado en nuestra base de datos.' 
+                }] 
+            });
             return false;
         }
 
@@ -85,13 +90,17 @@ const register = async (req, res) => {
             }
         }
 
-        jwt.sign(
-            payload, 
-            process.env.JWT_SECRET, 
-            { expiresIn: process.env.JWT_DURATION }, 
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_DURATION }, 
             (err, token) => {
                 if (err) throw err;
+                try {
+                    mailer(token, user.email)
+                } catch (error) {
+                    console.log(error)
+                }
+                
                 res.json({ token });
+
             }
         );
     // !End register process try

@@ -2,7 +2,6 @@ const QRPrinter = require('qr-image');
 const Cryptr = require('cryptr');
 const { respond, log } = require('../helpers')
 
-
 const cryptr = new Cryptr(process.env.CRYPTR);
 
 const isValidJson = (str) => {
