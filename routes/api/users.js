@@ -12,12 +12,7 @@ module.exports = (express) => {
      * @access  Public
      * 
      */
-    router.post('/', [
-        check('email', 'Invalid Email')
-        .isEmail(),
-        check('password', 'Password must have 6 or more characters')
-        .isLength(6)
-    ], userController.register);
+    router.post('/', userController.register);
 
     /**
      * 
@@ -36,7 +31,6 @@ module.exports = (express) => {
      * 
      */
     router.get('/show', userController.show);
-
 
 
     return router;

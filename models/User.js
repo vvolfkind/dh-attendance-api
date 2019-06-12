@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: 0
     },
+    isVerified: {
+        type: Boolean,
+        default: 0
+    },
     date: {
         type: Date,
         dafault: Date.now

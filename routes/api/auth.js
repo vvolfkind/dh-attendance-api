@@ -35,6 +35,8 @@ module.exports = (express) => {
 
     });
 
+    router.get('/verify', authController.verifyAccount);
+
 
     return router;
 

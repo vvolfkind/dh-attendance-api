@@ -1,0 +1,25 @@
+{
+  "apps": [{
+    "name": "Attendance",
+    "script": "./server.js",
+    "instances": "1",
+    "exec_mode": "cluster",
+    "watch": true,
+    "ignore_watch": ["log", ".git", "node_modules"],
+    "instance_var": "1",
+    "env": {
+      "PORT": "5000",
+      "CRYPTR": "hamster",
+      "QR_PREFIX": "CasaDigital",
+      "MONGO_URI": "mongodb+srv://rod365:rod365@cluster0-7cink.mongodb.net/test?retryWrites=true",
+      "JWT_SECRET": "hamster",
+      "JWT_DURATION": "36000000",
+      "SGE_API": "https://sge.digitalhouse.com/api/qr/student/validate?email=",
+      "SGE_TOKEN": "123456",
+      "DH_MAILING_URL": "http://127.0.0.1:7000/v1/leads"
+    },
+    "error_file": "./log/error.log",
+    "out_file": "./log/out.log",
+    "merge_logs": true
+  }]
+}

@@ -1,11 +1,15 @@
 const bcrypt = require('bcryptjs');
 const Cryptr = require('cryptr');
+const crypto = require('crypto');
+const FormData = require('form-data');
 const jwt = require('jsonwebtoken');
+const request = require('request');
+
 const { validationResult } = require('express-validator/check');
-const mailer = require('./mailingController').mailer
 
 const SGEController = require('./sgeController');
 const User = require('../models/User');
+const VerificationToken = require('../models/VerificationToken');
 
 const cryptr = new Cryptr(process.env.CRYPTR);
 
@@ -82,27 +86,16 @@ const register = async (req, res) => {
         const jsonData = generateJsonData(user, 1650000000, 1, [1, 2]);
         user.qrstring = await cryptr.encrypt(JSON.stringify(jsonData));
 
-        await user.save();
+        let verificationToken = new VerificationToken({
+            _userId: user._id,
+            token: crypto.randomBytes(16).toString('hex')
+        });
 
-        const payload = {
-            user: {
-                id: user.id
-            }
-        }
+        await verificationToken.save();
 
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_DURATION }, 
-            (err, token) => {
-                if (err) throw err;
-                try {
-                    mailer(token, user.email)
-                } catch (error) {
-                    console.log(error)
-                }
-                
-                res.json({ token });
+        sendActivationEmail(user.email, verificationToken);
+        res.status(200).send();
 
-            }
-        );
     // !End register process try
     } catch (err) {
         console.error(err.message);
@@ -110,6 +103,33 @@ const register = async (req, res) => {
     }
 
 };
+
+const verify = (req, res) => {
+
+}
+/**
+ * @param {string} email
+ * Metodo provisorio para aprovechar el envio de mails de Zoho
+ *  
+ */
+const sendActivationEmail = (email, token) => {
+    const url = process.env.DH_MAILING_URL;
+    let form = {
+        'qr_charla': token.token,
+        'inscripcion_email': email,
+        'inscripcion_interes': 'Dev - DH QR Key',
+        'contacto_motivo': 'Dev - DH QR Key',
+        'inscripcion_nombre_completo': 'Dev - DH QR Key',
+        'LEADSOURCE': 'Orgánico'
+    }
+
+    request.post({ url: url, form: form }, function(err, res, body) {
+        if(err) {
+            console.log(err);
+        }
+        console.log(res.body);
+    });
+}
 
 const index = async (req, res) => {
     try {
@@ -144,5 +164,6 @@ const show = async (req, res) => {
 module.exports = {
     register,
     index,
+    verify,
     show
 }

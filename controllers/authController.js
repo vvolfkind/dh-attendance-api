@@ -44,6 +44,57 @@ const authenticate = async (req, res) => {
 
 }
 
+const verifyAccount = async (req, res, next) => {
+// url: http://localhost:5000/v1/verify?email=rofo@dh.com&token=1234567899
+    const {email, token} = req.query;
+
+    try {
+        let dbToken = await Token.findOne({ token: token });
+        if (!dbToken) {
+            return res.status(400).json({
+                errors: [{
+                    message: 'Invalid Token'
+                }]
+            });
+        }
+        userId = dbToken._userId;
+        let user = await User.findOne({ userId });
+    } catch(err) {
+
+    }
+
+    Token.findOne({ token: token }, (err, token) => {
+        if (!token) {
+            return res.status(400).send({ 
+                type: 'not-verified', 
+                msg: 'We were unable to find a valid token. Your token my have expired.' 
+            });
+        }
+
+    });
+ 
+    const JWTPayload = {
+        user: {
+            id: user.id
+        }
+    }
+
+    res.status(200).send();
+
+    jwt.sign(JWTPayload, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_DURATION
+        },
+        (err, token) => {
+            if (err) throw err;
+            res.json({
+                token
+            });
+
+        }
+    );
+}
+
 module.exports = {
-    authenticate
+    authenticate,
+    verifyAccount
 }
