@@ -16,7 +16,7 @@
       "JWT_DURATION": "36000000",
       "SGE_API": "https://sge.digitalhouse.com/api/qr/student/validate?email=",
       "SGE_TOKEN": "123456",
-      "DH_MAILING_URL": "http://127.0.0.1:7000/v1/leads"
+      "DH_MAILING_URL": "https://dev.digitalhouse.com/mailing/v1/leads"
     },
     "error_file": "./log/error.log",
     "out_file": "./log/out.log",
