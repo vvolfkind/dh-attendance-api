@@ -8,19 +8,12 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
+        minlength: 6,
         required: true,
     }, 
-    qrstring: {
-        type: String,
-        required: false,
-    },
     role: {
         type: Number,
         required: true
-    },
-    isActive: {
-        type: Boolean,
-        default: 0
     },
     isVerified: {
         type: Boolean,

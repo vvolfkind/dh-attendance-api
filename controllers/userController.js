@@ -1,43 +1,35 @@
 const bcrypt = require('bcryptjs');
 const Cryptr = require('cryptr');
 const crypto = require('crypto');
-const FormData = require('form-data');
 const jwt = require('jsonwebtoken');
 const request = require('request');
 
 const { validationResult } = require('express-validator/check');
 
 const SGEController = require('./sgeController');
+
 const User = require('../models/User');
 const VerificationToken = require('../models/VerificationToken');
+const QrCode = require('../models/QrCode');
 const { respond, log } = require('../helpers')
 
 const cryptr = new Cryptr(process.env.CRYPTR);
-
-/**
- * @param {Mongoose Schema} user 
- * @param {string} expiryTime 
- * @param {integer} clearanceLevel 
- * @param {array} sites 
- * @returns {json}
- */
-
 
 const generateJsonData = (user, expiryTime, clearanceLevel, sites) => {
     let json = {};
 
     json.codeStatus = {
-        "id": user.id,
-        "expiryTime": expiryTime,
-        "prefix": process.env.QR_PREFIX
+        id: user._id,
+        expiryTime: expiryTime,
+        prefix: process.env.QR_PREFIX
     }
 
     json.entity = {
-        "accessClearance": clearanceLevel,
-        "email": user.email,
-        "sites": sites
+        accessClearance: clearanceLevel,
+        email: user.email,
+        sites: sites
     }
-
+console.log(json);
     return json
 }
 
@@ -56,22 +48,13 @@ const dbControl = async (email) => {
     }
 }
 
-
-
-
 const register = async (req, res) => {
     let user;
     const response = {};
-    const errors = validationResult(req);
     const { email, password } = req.body;
     const mailingURL = process.env.DH_MAILING_URL;
-
+    
     try {
-        if (!errors.isEmpty()) {
-            response.error = "Datos Erroneos";
-            throw new Error(response.error);
-        }
- 
         user = await User.findOne({ email });
         if (user) {
             response.error = "El email ya existe";
@@ -87,7 +70,13 @@ const register = async (req, res) => {
         await user.save();
 // Definir roles, duraciones, sedes!
         const jsonData = generateJsonData(user, 1650000000, 1, [1, 2]);
-        user.qrstring = await cryptr.encrypt(JSON.stringify(jsonData));
+        const encrypted = await cryptr.encrypt(JSON.stringify(jsonData));
+
+        let qrCode = new QrCode({
+            _userId: user._id,
+            code: encrypted
+        });
+        await qrCode.save();
 
         let verificationToken = new VerificationToken({
             _userId: user._id,
@@ -128,33 +117,6 @@ const register = async (req, res) => {
     }
 
 };
-
-/**
- * @param {string} email
- * @param {string} token
- * Metodo provisorio para aprovechar el envio de mails de Zoho
- * y asi enviar el email de activacion de cuenta
- * 
- */
-const sendActivationEmail = (email, token) => {
-    const url = process.env.DH_MAILING_URL;
-    let form = {
-        'qr_charla': token.token,
-        'inscripcion_email': email,
-        'inscripcion_interes': 'Dev - DH QR Key',
-        'contacto_motivo': 'Dev - DH QR Key',
-        'inscripcion_nombre_completo': 'Dev - DH QR Key',
-        'LEADSOURCE': 'Orgánico'
-    }
-
-    request.post({ url: url, form: form }, (err, res) => {
-        if(err) respond(res, { "code": 500, "message": err });
-        respond(res, {
-            "code": 200,
-            "message": "success"
-        });
-    });
-}
 
 /**
  * 
