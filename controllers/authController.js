@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+
 const User = require('../models/User');
-
 const VerificationToken = require('../models/VerificationToken');
-
+const { respond, log } = require('../helpers')
 
 const authenticate = async (req, res) => {
     const { email, password } = req.body;

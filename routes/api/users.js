@@ -21,7 +21,8 @@ module.exports = (express) => {
      * @access  Private
      * 
      */
-    router.get('/', auth, userController.index);
+    //router.get('/', auth, userController.index);
+    router.get('/', userController.index);
 
     /**
      * 
@@ -30,6 +31,7 @@ module.exports = (express) => {
      * @access  Private
      * 
      */
+    //router.get('/show', auth, userController.show);
     router.get('/show', userController.show);
 
 
