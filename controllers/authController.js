@@ -47,78 +47,48 @@ const authenticate = async (req, res) => {
 
 }
 
-const activateAccount = async (user) => {
-    user.isVerified = true;
-    user.save((err) => {
-        if (err) throw err;
-        return true;
-    })
-} 
-
 
 const verifyAccount = async (req, res, next) => {
-// url: http://localhost:5000/v1/verify?email=rofo@dh.com&token=1234567899
     const {email, token} = req.query;
+    const response = {};
     let user;
+    let dbToken;
 
     try {
-        let dbToken = await VerificationToken.findOne({ token });
-        if (!dbToken) {
-            return res.status(400).json({
-                errors: [{
-                    message: 'Invalid Token'
-                }]
-            });
-        }
+        dbToken = await VerificationToken.findOne({ token });
+        user = await User.findOne({ _id: dbToken._userId });
 
-        userId = dbToken._userId;
-        user = await User.findById(userId);
-        console.log(user);
-        if(user) {
+        if (dbToken && user) {
             user.isVerified = true;
-            user.save((err) => {
-                if (err) throw err;
-                return res.status(200).send("Cuenta verificada");
+            await user.save();
+            console.log(user);
+            respond(res, {
+                "code": 200,
+                "message": "success"
             });
+
+
         } else {
-            throw "User not found";
+            response.error = "Email inexistente o token de verificación vencido.";
+            throw new Error(response.error);
+
         }
+
     } catch(err) {
-        console.error(err);
-        return res.status(500).send({
-            'error': 'Server Error'
-        })
-    }
+        if (response.error) {
+            response.code = 400;
+            response.message = response.error;
+            respond(res, response);
 
-    VerificationToken.findOne({ token: token }, (err, token) => {
-        if (!token) {
-            return res.status(400).send({ 
-                type: 'not-verified', 
-                msg: 'Invalid or expider token' 
-            });
-        }
-
-    });
-
-    const JWTPayload = {
-        user: {
-            id: user._id
-        }
-    }
-
-    res.status(200).send();
-
-    jwt.sign(JWTPayload, process.env.JWT_SECRET, {
-            expiresIn: process.env.JWT_DURATION
-        },
-        (err, token) => {
-            if (err) throw err;
-            res.json({
-                token
+        } else {
+            respond(res, {
+                "code": 500,
+                "message": err
             });
 
         }
-    );
+
+    }
 }
 
 module.exports = {

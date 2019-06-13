@@ -106,10 +106,10 @@ const register = async (req, res) => {
 
         await request.post({ url: mailingURL, form: form }, (requestError, requestResponse) => {
             if(requestError) throw new Error(requestError);
-            respond(res, {
-                "code": 200,
-                "message": "success"
-            });
+            response.data = "ok";
+            response.code = 200;
+            response.message = "success";
+            respond(res, response);
         });
     // !End register process try
     } catch (err) {
