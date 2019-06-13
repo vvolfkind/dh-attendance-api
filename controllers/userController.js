@@ -69,13 +69,13 @@ const register = async (req, res) => {
     try {
         if (!errors.isEmpty()) {
             response.error = "Datos Erroneos";
-            throw new Error("Datos Erroneos");
+            throw new Error(response.error);
         }
  
         user = await User.findOne({ email });
         if (user) {
             response.error = "El email ya existe";
-            throw new Error("El email ya existe");
+            throw new Error(response.error);
         }
 
         let role = 1;
@@ -104,8 +104,8 @@ const register = async (req, res) => {
             'LEADSOURCE': 'Orgánico'
         }
 
-        await request.post({ url: mailingURL, form: form }, (err, res) => {
-            if(err) throw err;
+        await request.post({ url: mailingURL, form: form }, (requestError, requestResponse) => {
+            if(requestError) throw new Error(requestError);
             respond(res, {
                 "code": 200,
                 "message": "success"
