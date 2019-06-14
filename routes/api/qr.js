@@ -31,7 +31,7 @@ module.exports = (express) => {
      * @desc    Renders a QR code on screen
      * @access  Private
      */
-    router.get('/render', auth, qrController.renderQrRequest);
+    router.get('/render', qrController.renderQrRequest);
 
     return router;
 
