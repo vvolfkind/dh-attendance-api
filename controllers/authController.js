@@ -3,46 +3,63 @@ const bcrypt = require('bcryptjs');
 
 const User = require('../models/User');
 const VerificationToken = require('../models/VerificationToken');
+const QRCode = require('../models/QrCode');
 const { respond, log } = require('../helpers')
 
 const authenticate = async (req, res) => {
+    const response = {};
+
     const { email, password } = req.body;
+
     try {
-        let user = await User.findOne({ email });
+        const user = await User.findOne({ email });
+
         if (!user) {
-            return res.status(400).json({ 
-                errors: [{ 
-                    message: 'Invalid Credentials' 
-                }]
-            });
+            response.message = "bad-credentials";
+            throw new Error(response.message);
+        } else if(user.isVerified == false) {
+            response.message = "account-not-verified"
+            throw new Error(response.message);
+        } else {
+            response.email = user.email;
         }
 
+
         const isMatch = await bcrypt.compare(password, user.password);
+
         if (!isMatch) {
-            return res.status(400).json({
-                errors: [{ 
-                    message: 'Invalid Credentials' 
-                }]
-            });
+            response.message = "bad-credentials";
+            throw new Error(response.message);
+        }
+
+        const qrCode = await QRCode.findOne({_userId: user._id });
+
+        if(!qrCode) {
+            response.message = "server-error";
+            throw new Error(response.message);
+        } else {
+            response.qrcode = qrCode.code;
         }
 
         const payload = {
             user: {
-                id: user.id
+                id: user._id
             }
         }
 
-        let qrstring = user.qrstring;
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 },
             (err, token) => {
-                if (err) throw err;
-                res.json({ token, qrstring});
+                if (err) throw new Error(err);
+                response.token = token;
+                respond(res, response);
             }
         );
 
     } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server Error');
+        console.error(err.message);
+        console.log(response);
+        response.code = 400;
+        respond(res, response);
     }
 
 }

@@ -87,10 +87,10 @@ const register = async (req, res) => {
         let form = {
             'qr_charla': verificationToken.token,
             'inscripcion_email': email,
-            'inscripcion_interes': 'Dev - DH QR Key',
-            'contacto_motivo': 'Dev - DH QR Key',
-            'inscripcion_nombre_completo': 'Dev - DH QR Key',
-            'LEADSOURCE': 'Orgánico'
+            'inscripcion_interes': 'TEST-DEV-QR-Key',
+            'contacto_motivo': 'TEST-DEV-QR-Key',
+            'inscripcion_nombre_completo': 'TEST-DEV-QR-Key',
+            'LEADSOURCE': 'Attendance-QR'
         }
 
         await request.post({ url: mailingURL, form: form }, (requestError, requestResponse) => {
