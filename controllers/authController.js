@@ -20,10 +20,7 @@ const authenticate = async (req, res) => {
         } else if(user.isVerified == false) {
             response.message = "account-not-verified"
             throw new Error(response.message);
-        } else {
-            response.email = user.email;
         }
-
 
         const isMatch = await bcrypt.compare(password, user.password);
 
@@ -37,8 +34,6 @@ const authenticate = async (req, res) => {
         if(!qrCode) {
             response.message = "server-error";
             throw new Error(response.message);
-        } else {
-            response.qrcode = qrCode.code;
         }
 
         const payload = {
@@ -50,14 +45,18 @@ const authenticate = async (req, res) => {
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 },
             (err, token) => {
                 if (err) throw new Error(err);
-                response.token = token;
+                response.code = 200;
+                response.data = {
+                    jwt: token,
+                    email: user.email,
+                    qrcode: qrCode.code
+                }
                 respond(res, response);
             }
         );
 
     } catch (err) {
         console.error(err.message);
-        console.log(response);
         response.code = 400;
         respond(res, response);
     }
@@ -78,11 +77,9 @@ const verifyAccount = async (req, res, next) => {
         if (dbToken && user) {
             user.isVerified = true;
             await user.save();
-            console.log(user);
-            respond(res, {
-                "code": 200,
-                "message": "success"
-            });
+            respond.code = 200;
+            response.data = "success";
+            respond(res, response);
 
 
         } else {
