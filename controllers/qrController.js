@@ -97,8 +97,9 @@ const renderQrRequest = async (req, res) => {
     try {
         svg_string = await QRPrinter.imageSync(req.query.qr, { type: 'png' });
     } catch(err) {
-        log(err);
-        respond(res, err);
+        response.message = err;
+        response.code = 500;
+        respond(res, response);
     }
 
     respond(res, { direct: true, data: svg_string });
