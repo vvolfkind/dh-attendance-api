@@ -90,7 +90,7 @@ const register = async (req, res) => {
             'inscripcion_interes': 'TEST-DEV-QR-Key',
             'contacto_motivo': 'TEST-DEV-QR-Key',
             'inscripcion_nombre_completo': 'TEST-DEV-QR-Key',
-            'LEADSOURCE': 'Attendance-QR'
+            'LEADSOURCE': ''
         }
 
         await request.post({ url: mailingURL, form: form }, (requestError, requestResponse) => {
