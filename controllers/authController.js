@@ -80,7 +80,7 @@ const verifyAccount = async (req, res, next) => {
             // respond.code = 200;
             // response.data = "success";
             // respond(res, response);
-            return res.redirect(301, '/foo/bar');
+            return res.redirect(301, '/attendance/login');
             
         } else {
             response.error = "Email inexistente o token de verificación vencido.";
