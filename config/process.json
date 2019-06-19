@@ -14,8 +14,9 @@
       "MONGO_URI": "mongodb+srv://rod365:rod365@cluster0-7cink.mongodb.net/test?retryWrites=true",
       "JWT_SECRET": "hamster",
       "JWT_DURATION": "36000000",
-      "SGE_API": "https://sge.digitalhouse.com/api/qr/student/validate?email=",
-      "SGE_TOKEN": "123456",
+      "SGE_API": "http://dhsge.digbang.com/api/qr/student/validate?email=",
+      "SGE_CLIENT": 9,
+      "SGE_SECRET": "h8mjUYyu4Y82WIEfpFGw8ZHrBFB7CbVmyPOu55Us",
       "DH_MAILING_URL": "https://dev.digitalhouse.com/mailing/v1/leads"
     },
     "error_file": "./log/error.log",
