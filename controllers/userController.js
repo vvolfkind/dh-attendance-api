@@ -34,13 +34,6 @@ console.log(json);
     return json
 }
 
-/**
- * Control de falsos registros. Si el email no se encuentra en el SGE,
- * se borra el registro de la base de datos.
- * @param {string} email
- * @returns {integer} Schema deleted count
- * 
- */
 const dbControl = async (email) => {
     let user = await User.findOne({ email });
     if (user) {
@@ -132,13 +125,62 @@ const register = async (req, res) => {
 
 };
 
-/**
- * 
- * @param {http request} req 
- * @param {http response} res 
- * Indexes all users
- * 
- */
+const resetVerificationToken = async (req, res) => {
+    const email = req.query.email;
+
+    const response = {};
+    let user;
+
+    try {
+        user = await User.findOne({ email: email });
+
+        if (!user) {
+            response.error = "El email no esta registrado.";
+            throw new Error(response.error);
+        }
+
+        let verificationToken = await new VerificationToken({
+            _userId: user._id,
+            token: crypto.randomBytes(16).toString('hex')
+        });
+        await verificationToken.save();
+
+        let form = {
+            'qr_charla': verificationToken.token,
+            'inscripcion_email': email,
+            'inscripcion_interes': 'TEST-DEV-QR-Key',
+            'contacto_motivo': 'TEST-DEV-QR-Key',
+            'inscripcion_nombre_completo': 'TEST-DEV-QR-Key',
+            'LEADSOURCE': ''
+        }
+        
+        const mailingURL = process.env.DH_MAILING_URL;
+
+        await request.post({ url: mailingURL, form: form }, (reqErr, reqRes) => {
+            if (reqErr) throw new Error(reqErr);
+            response.data = "ok";
+            response.code = 200;
+            response.message = "Link de activacion re-enviado. Es valido dentro de las proximas 6 horas.";
+            respond(res, response);
+        });
+
+
+    } catch(err) {
+        if (response.error) {
+            response.code = 400;
+            response.message = response.error;
+            respond(res, response);
+        } else {
+            respond(res, {
+                "code": 500,
+                "message": err,
+                "error": err
+            });
+        }
+    }
+};
+
+
 const index = async (req, res) => {
     let response = {};
     try {
@@ -154,13 +196,6 @@ const index = async (req, res) => {
 
 };
 
-/**
- * 
- * @param {http request} req 
- * @param {http response} res 
- * Returns a single user found by id
- * 
- */
 const show = async (req, res) => {
     let user;
     let response;
@@ -190,5 +225,6 @@ const show = async (req, res) => {
 module.exports = {
     register,
     index,
-    show
+    show,
+    resetVerificationToken
 }

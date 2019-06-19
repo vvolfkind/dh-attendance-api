@@ -11,6 +11,7 @@ module.exports = (express) => {
 
     router.get('/show', auth, userController.show);
     //router.get('/show', userController.show);
+    router.get('/resetVerificationToken', userController.resetVerificationToken);
 
     return router;
 

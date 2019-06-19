@@ -15,24 +15,24 @@ const authenticate = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            response.message = "bad-credentials";
+            response.message = "Email o password incorrectos";
             throw new Error(response.message);
         } else if(user.isVerified == false) {
-            response.message = "account-not-verified"
+            response.message = "La cuenta no esta activada. Revisa tu casilla de email";
             throw new Error(response.message);
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            response.message = "bad-credentials";
+            response.message = "Email o password incorrectos.";
             throw new Error(response.message);
         }
 
         const qrCode = await QRCode.findOne({_userId: user._id });
 
         if(!qrCode) {
-            response.message = "server-error";
+            response.message = "Error en el servidor";
             throw new Error(response.message);
         }
 
