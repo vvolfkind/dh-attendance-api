@@ -11,7 +11,7 @@ const refreshToken = (time) => {
     // }, next_run)
 }
 
-const validateMail = (email) => {
+const validateEmail = (email) => {
     return new Promise((resolve, reject) => {
         console.log(process.env.SGE_API + email);
         request.get({
@@ -23,7 +23,7 @@ const validateMail = (email) => {
             if (!error && response.statusCode == 200) {
                 resolve(JSON.parse(body).data);
             } else {
-                reject('Invalid email')
+                resolve(false)
             }
         })
     })
@@ -57,4 +57,4 @@ getToken();
 
 
 
-module.exports = validateMail;
+module.exports = validateEmail;

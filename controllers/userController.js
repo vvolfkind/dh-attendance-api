@@ -3,10 +3,11 @@ const Cryptr = require('cryptr');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const request = require('request');
+const validator = require('validator');
 
 const { validationResult } = require('express-validator/check');
 
-const SGEController = require('./sgeController');
+const SGE = require('./sgeController');
 
 const User = require('../models/User');
 const VerificationToken = require('../models/VerificationToken');
@@ -51,13 +52,26 @@ const dbControl = async (email) => {
 const register = async (req, res) => {
     let user;
     const response = {};
-    const { email, password } = req.body;
+    const { email, password, cpassword } = req.body;
+
+    // if (!validator.isEmail(email) || !validator.isEmpty(password) || !validator.equals(password, cpassword)) {
+    //     response.error = "Datos invalidos";
+    //     throw new Error(response.error);
+    // }
+
     const mailingURL = process.env.DH_MAILING_URL;
     
     try {
         user = await User.findOne({ email });
         if (user) {
             response.error = "El email ya existe";
+            throw new Error(response.error);
+        }
+
+        let alumnee = await SGE(email);
+
+        if(!alumnee) {
+            response.error = "Email no registrado";
             throw new Error(response.error);
         }
 

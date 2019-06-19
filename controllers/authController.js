@@ -77,11 +77,11 @@ const verifyAccount = async (req, res, next) => {
         if (dbToken && user) {
             user.isVerified = true;
             await user.save();
-            respond.code = 200;
-            response.data = "success";
-            respond(res, response);
-
-
+            // respond.code = 200;
+            // response.data = "success";
+            // respond(res, response);
+            return res.redirect(301, '/foo/bar');
+            
         } else {
             response.error = "Email inexistente o token de verificación vencido.";
             throw new Error(response.error);
