@@ -48,46 +48,6 @@ const dbControl = async (email) => {
     }
 }
 
-// var http = require('http');
-
-// var qs = require('querystring');
-
-// var options = {
-//     'method': 'POST',
-//     'hostname': 'https://im.digitalhouse.com',
-//     'path': '/api/auth/authorization',
-//     'headers': {
-//         'Content-Type': 'application/x-www-form-urlencoded'
-//     }
-// };
-
-// var req = http.request(options, function (res) {
-//     var chunks = [];
-
-//     res.on("data", function (chunk) {
-//         chunks.push(chunk);
-//     });
-
-//     res.on("end", function (chunk) {
-//         var body = Buffer.concat(chunks);
-//         console.log(body.toString());
-//     });
-
-//     res.on("error", function (error) {
-//         console.error(error);
-//     });
-// });
-
-// var postData = qs.stringify({
-//     'grantType': 'client_credentials',
-//     'clientId': '2',
-//     'clientSecret': 'wyYBlIVQzK1moleUsQqQdVFVE4hxoOK4I00cIptP'
-// });
-
-// req.write(postData);
-
-// req.end();
-
 const register = async (req, res) => {
     let user;
     const response = {};
