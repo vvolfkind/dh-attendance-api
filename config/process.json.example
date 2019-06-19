@@ -1,0 +1,26 @@
+{
+  "apps": [{
+    "name": "Attendance",
+    "script": "./server.js",
+    "instances": "1",
+    "exec_mode": "cluster",
+    "watch": true,
+    "ignore_watch": ["log", ".git", "node_modules"],
+    "instance_var": "1",
+    "env": {
+      "PORT": "",
+      "CRYPTR": "",
+      "QR_PREFIX": "",
+      "MONGO_URI": "",
+      "JWT_SECRET": "",
+      "JWT_DURATION": "",
+      "SGE_API": "",
+      "SGE_CLIENT": ,
+      "SGE_SECRET": "",
+      "DH_MAILING_URL": ""
+    },
+    "error_file": "./log/error.log",
+    "out_file": "./log/out.log",
+    "merge_logs": true
+  }]
+}
