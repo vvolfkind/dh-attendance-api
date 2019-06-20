@@ -81,14 +81,10 @@ const encodeStringRequest = async (req, res) => {
         response.data = encryptedData;
         respond(res, response);
     } catch(err) {
-        if (response.message !== null || response.message !== "undefined") {
-            response.code = 400;
-            respond(res, response);
-        } else {
-            response.message = err;
-            response.code = 400;
-            respond(res, response);
-        }
+        response.message = err;
+        response.code = 400;
+        respond(res, response);
+        
     }
 };
 
