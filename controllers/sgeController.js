@@ -23,6 +23,7 @@ const validateEmail = (email) => {
             if (!error && response.statusCode == 200) {
                 resolve(JSON.parse(body).data);
             } else {
+                console.error(error, response.statusCode);
                 resolve(false)
             }
         })
