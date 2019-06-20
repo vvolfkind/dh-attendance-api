@@ -13,11 +13,11 @@ const isValidJson = (str) => {
     return true;
 }
 
-const decode = (data) => {
+const decode = async (data) => {
     let response = {};
 
     try {
-        response.data = JSON.parse(cryptr.decrypt(data));
+        response.data = JSON.parse(await cryptr.decrypt(data));
     } catch (err) {
         log(`Error en datos: ${err}`);
         throw new Error(err);
