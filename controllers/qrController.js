@@ -21,6 +21,7 @@ const decode = async (data) => {
         response.data = JSON.parse(decryptData);
     } catch (err) {
         log(`Error en datos: ${err}`);
+        if (err === null || err === undefined) throw new Error('Error decodificando');
         throw new Error(err);
     }
 
