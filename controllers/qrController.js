@@ -72,21 +72,28 @@ const decryptRequestAndReturnJson = async (req, res) => {
 };
 
 const encodeStringRequest = async (req, res) => {
+    const response = {};
+    let encryptedData;
+
     if(!isValidJson(req.body.data)) {
-        respond(res, {
-            "code": 400,
-            "message": "Error al parsear JSON"
-        });
+        response.message = 'Error al parsear JSON';
+        response.code = 400;
+        throw new Error(response.message);
     }
     try {
-
+        encryptedData = await cryptr.encrypt(req.body.data);
+        response.code = 200;
+        response.data = encryptedData;
+        respond(res, response);
     } catch(err) {
-        log(err);
-        console.error(err);
-        respond(res, {
-            "code": 400,
-            "message": err
-        });
+        if (response.message !== null || response.message !== "undefined") {
+            response.code = 400;
+            respond(res, response);
+        } else {
+            response.message = err;
+            response.code = 400;
+            respond(res, response);
+        }
     }
 };
 
