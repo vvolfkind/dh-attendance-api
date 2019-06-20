@@ -75,11 +75,6 @@ const encodeStringRequest = async (req, res) => {
     const response = {};
     let encryptedData;
 
-    if(!isValidJson(req.body.data)) {
-        response.message = 'Error al parsear JSON';
-        response.code = 400;
-        throw new Error(response.message);
-    }
     try {
         encryptedData = await cryptr.encrypt(req.body.data);
         response.code = 200;
