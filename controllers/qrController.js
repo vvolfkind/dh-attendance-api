@@ -14,13 +14,15 @@ const isValidJson = (str) => {
 }
 
 const decode = (data) => {
-    const response = {};
+    let response = {};
 
     try {
         response.data = JSON.parse(cryptr.decrypt(data));
     } catch (err) {
         log(`Error en datos: ${err}`);
-        response = false;
+        response.code = 400;
+        response.message = err
+        respond(res, response);
     }
 
     return response;
