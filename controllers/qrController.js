@@ -22,7 +22,7 @@ const decode = async (data) => {
     } catch (err) {
         log(`Error en datos: ${err}`);
         if (err === null || err === undefined) throw new Error('Error decodificando');
-        throw new Error(err);
+        throw err;
     }
 
     return response;
@@ -35,7 +35,7 @@ const encode = async (data) => {
         encrypt = await cryptr.encrypt(JSON.stringify(data));
     } catch(err) {
         log(err);
-        throw new Error(err);
+        throw err;
     }
 
     return encrypt;
