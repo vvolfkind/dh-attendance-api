@@ -15,9 +15,10 @@ const isValidJson = (str) => {
 
 const decode = async (data) => {
     let response = {};
-
+    let decryptData
     try {
-        response.data = JSON.parse(await cryptr.decrypt(data));
+        decryptData = await cryptr.decrypt(data);
+        response.data = JSON.parse(decryptData);
     } catch (err) {
         log(`Error en datos: ${err}`);
         throw new Error(err);
