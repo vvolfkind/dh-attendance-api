@@ -20,9 +20,7 @@ const decode = (data) => {
         response.data = JSON.parse(cryptr.decrypt(data));
     } catch (err) {
         log(`Error en datos: ${err}`);
-        response.code = 400;
-        response.message = err
-        respond(res, response);
+        throw new Error(err);
     }
 
     return response;
@@ -35,11 +33,7 @@ const encode = async (data) => {
         encrypt = await cryptr.encrypt(JSON.stringify(data));
     } catch(err) {
         log(err);
-        console.error(err);
-        respond(res, {
-            "code": 400,
-            "message": err
-        });
+        throw new Error(err);
     }
 
     return encrypt;
