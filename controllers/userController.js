@@ -61,13 +61,13 @@ const register = async (req, res) => {
             throw new Error(response.error);
         }
 
-        let alumnee = await SGE(email);
+        // let alumnee = await SGE(email);
         
-        if(!alumnee) {
-            console.error(alumnee);
-            response.error = "Email no registrado";
-            throw new Error(response.error);
-        }
+        // if(!alumnee) {
+        //     console.error(alumnee);
+        //     response.error = "Email no registrado";
+        //     throw new Error(response.error);
+        // }
 
         let role = 1;
 
