@@ -1,14 +1,11 @@
-module.exports = (express) => {
-    const router = express.Router();
+module.exports = express => {
+  const router = express.Router();
 
-    const authController = require('../../controllers/authController');
+  const authController = require("../../controllers/authController");
 
-    router.post('/', authController.authenticate);
+  router.post("/", authController.authenticate);
 
-    router.get('/verify', authController.verifyAccount);
+  router.get("/verify", authController.verifyAccount);
 
-    
-
-    return router;
-
-}
+  return router;
+};
