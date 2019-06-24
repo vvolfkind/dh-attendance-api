@@ -47,11 +47,6 @@ const register = async (req, res) => {
     const response = {};
     const { email, password, cpassword } = req.body;
 
-    // if (!validator.isEmail(email) || !validator.isEmpty(password) || !validator.equals(password, cpassword)) {
-    //     response.error = "Datos invalidos";
-    //     throw new Error(response.error);
-    // }
-
     const mailingURL = process.env.DH_MAILING_URL;
     
     try {
@@ -61,13 +56,13 @@ const register = async (req, res) => {
             throw new Error(response.error);
         }
 
-        // let alumnee = await SGE(email);
+        let alumnee = await SGE(email);
         
-        // if(!alumnee) {
-        //     console.error(alumnee);
-        //     response.error = "Email no registrado";
-        //     throw new Error(response.error);
-        // }
+        if(!alumnee) {
+            console.error(alumnee);
+            response.error = "Email no registrado";
+            throw new Error(response.error);
+        }
 
         let role = 1;
 
@@ -121,7 +116,6 @@ const register = async (req, res) => {
                 "message": err
             });
         }
-
     }
 
 };

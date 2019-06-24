@@ -49,11 +49,9 @@ const encodeJsonBodyRequest = async (req, res) => {
         respond(res, response);
     } catch(err) {
         log(err);
-        console.error(err);
-        respond(res, {
-            "code": 400,
-            "message": err
-        });
+        response.code = 400;
+        response.message = err;
+        respond(res, response);
     }
 
 };
