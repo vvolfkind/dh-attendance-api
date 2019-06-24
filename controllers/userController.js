@@ -17,20 +17,21 @@ const { respond, log } = require('../helpers')
 const cryptr = new Cryptr(process.env.CRYPTR);
 
 const generateJsonData = (user, expiryTime, clearanceLevel, sites) => {
-    let json = {};
+    let json = {
+      data: {
+        codeStatus: {
+          id: user._id,
+          expiryTime: expiryTime,
+          prefix: process.env.QR_PREFIX
+        },
+        entity: {
+          accessClearance: clearanceLevel,
+          email: user.email,
+          sites: sites
+        }
+      }
+    };
 
-    json.codeStatus = {
-        id: user._id,
-        expiryTime: expiryTime,
-        prefix: process.env.QR_PREFIX
-    }
-
-    json.entity = {
-        accessClearance: clearanceLevel,
-        email: user.email,
-        sites: sites
-    }
-console.log(json);
     return json
 }
 
@@ -56,13 +57,13 @@ const register = async (req, res) => {
             throw new Error(response.error);
         }
 
-        let alumnee = await SGE(email);
+        // let alumnee = await SGE(email);
         
-        if(!alumnee) {
-            console.error(alumnee);
-            response.error = "Email no registrado";
-            throw new Error(response.error);
-        }
+        // if(!alumnee) {
+        //     console.error(alumnee);
+        //     response.error = "Email no registrado";
+        //     throw new Error(response.error);
+        // }
 
         let role = 1;
 
@@ -73,6 +74,7 @@ const register = async (req, res) => {
         await user.save();
 // Definir roles, duraciones, sedes!
         const jsonData = generateJsonData(user, 1650000000, 1, [1, 2]);
+        console.log(jsonData);
         const encrypted = await cryptr.encrypt(JSON.stringify(jsonData));
 
         let qrCode = new QrCode({
