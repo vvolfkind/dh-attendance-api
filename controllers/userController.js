@@ -60,7 +60,7 @@ const register = async (req, res) => {
         let alumnee = await SGE(email);
         
         if(!alumnee) {
-            response.error = "Email no registrado en nuestros sistemas. Asegurate que sea el que solemos contactarte. Si pensas que hay un error, comunicate con el departamento de Alumnos";
+            response.error = "Email no registrado. Asegurate que sea el que solemos contactarte. Si pensas que hay un error, comunicate con el departamento de Alumnos.";
             throw new Error(response.error);
         }
 
