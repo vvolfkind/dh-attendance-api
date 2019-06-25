@@ -6,6 +6,8 @@ module.exports = express => {
   router.post("/", authController.authenticate);
 
   router.get("/verify", authController.verifyAccount);
+  
+  router.get("/check", authController.checkJwt);
 
   return router;
 };

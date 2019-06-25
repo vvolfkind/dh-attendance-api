@@ -97,7 +97,29 @@ const verifyAccount = async (req, res, next) => {
   }
 };
 
+const checkJwt = async (req, res) => {
+  try {
+    const token = await jwt.verify(req.query.token, process.env.JWT_SECRET);
+    if (!token) throw new Error();
+    if (!token.exp * 1000 <= Date.now()) {
+      respond(res, {
+        code: 200,
+        message: "success",
+        data: "ok"
+      });
+    } else {
+      throw new Error();
+    }
+  } catch (err) {
+    respond(res, {
+      code: 403,
+      message: err
+    });
+  }
+};
+
 module.exports = {
   authenticate,
-  verifyAccount
+  verifyAccount,
+  checkJwt
 };

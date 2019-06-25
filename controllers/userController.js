@@ -3,14 +3,12 @@ const Cryptr = require("cryptr");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const request = require("request");
-const validator = require("validator");
-
-const { validationResult } = require("express-validator/check");
 
 const SGE = require("./sgeController");
 
 const User = require("../models/User");
 const VerificationToken = require("../models/VerificationToken");
+const PasswordResetToken = require("../models/PasswordResetToken");
 const QrCode = require("../models/QrCode");
 const { respond, log } = require("../helpers");
 
@@ -57,13 +55,13 @@ const register = async (req, res) => {
       throw new Error(response.error);
     }
 
-    let alumnee = await SGE(email);
+    // let alumnee = await SGE(email);
 
-    if (!alumnee) {
-      response.error =
-        "Email no registrado. Asegurate que sea el que solemos contactarte. Si pensas que hay un error, comunicate con el departamento de Alumnos.";
-      throw new Error(response.error);
-    }
+    // if (!alumnee) {
+    //   response.error =
+    //     "Email no registrado. Asegurate que sea el que solemos contactarte. Si pensas que hay un error, comunicate con el departamento de Alumnos.";
+    //   throw new Error(response.error);
+    // }
 
     let role = 1;
 
@@ -98,8 +96,7 @@ const register = async (req, res) => {
       LEADSOURCE: ""
     };
 
-    await request.post(
-      { url: mailingURL, form: form },
+    await request.post({ url: mailingURL, form: form },
       (requestError, requestResponse) => {
         if (requestError) throw new Error(requestError);
         response.data = "ok";
@@ -135,7 +132,7 @@ const resetVerificationToken = async (req, res) => {
 
     if (!user) {
       response.error = "El email no esta registrado.";
-      throw new Error(response.error);
+      throw new Error("El email no esta registrado.");
     }
 
     let verificationToken = await new VerificationToken({
@@ -159,8 +156,7 @@ const resetVerificationToken = async (req, res) => {
       if (reqErr) throw new Error(reqErr);
       response.data = "ok";
       response.code = 200;
-      response.message =
-        "Link de activacion re-enviado. Es valido dentro de las proximas 6 horas.";
+      response.message = "Link de activacion re-enviado. El mismo solo es valido dentro de las proximas 6 horas.";
       respond(res, response);
     });
   } catch (err) {
@@ -176,6 +172,88 @@ const resetVerificationToken = async (req, res) => {
       });
     }
   }
+};
+
+const passwordReset = async (req, res) => {
+  const email = req.query.email;
+  const token = req.query.token;
+  const response = {};
+
+  try {
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    if(!decoded) throw new Error;
+
+    const user = await User.findById(decoded.user.id);
+    if(!user) throw new Error;
+
+    if(user.email === email) {
+      res.set('x-auth', token);
+      return res.redirect(301, "http://localhost:4080/attendance/reset");
+    } else {
+      throw new Error;
+    }
+  } catch(err) {
+    response.code = 400;
+    response.message = err;
+    respond(res, response);
+  }
+
+};
+
+const passwordResetRequest = async (req, res) => {
+  const email = req.query.email;
+  console.log(email)
+
+  const response = {};
+  let user;
+
+  try {
+    user = await User.findOne({ email: email });
+    if (!user) {
+      response.code = 401;
+      response.message = "Email no registrado";
+      throw new Error(response.message);
+    }
+
+    const payload = {
+      user: {
+        id: user._id
+      }
+    };
+
+    const token = await jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: 360000
+    });
+    const resetToken = new PasswordResetToken({
+      _userId: user._id,
+      token: token
+    });
+    await resetToken.save();
+
+    let form = {
+      qr_charla: token,
+      inscripcion_email: email,
+      inscripcion_interes: "TEST-DEV-QR-Key",
+      contacto_motivo: "TEST-DEV-QR-Reset",
+      inscripcion_nombre_completo: "TEST-DEV-QR-Key",
+      LEADSOURCE: ""
+    };
+
+    await request.post({
+      url: process.env.DH_MAILING_URL,
+      form: form
+    },(requestError, requestResponse) => {
+        if (requestError) throw new Error(requestError);
+        response.data = "ok";
+        response.code = 200;
+        response.message = "Email enviado.";
+        respond(res, response);
+      }
+    );
+  } catch(err) {
+    respond(res, response);
+  }
+
 };
 
 const index = async (req, res) => {
@@ -217,8 +295,10 @@ const show = async (req, res) => {
 };
 
 module.exports = {
+  resetVerificationToken,
+  passwordResetRequest,
+  passwordReset,
   register,
   index,
-  show,
-  resetVerificationToken
+  show
 };
