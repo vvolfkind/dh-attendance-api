@@ -17,6 +17,7 @@
       "SGE_API": "",
       "SGE_CLIENT": ,
       "SGE_SECRET": "",
+      "DIGBANG_IM": "",
       "DH_MAILING_URL": ""
     },
     "error_file": "./log/error.log",

@@ -17,6 +17,7 @@
       "SGE_API": "http://dhsge.digbang.com/api/qr/student/validate?email=",
       "SGE_CLIENT": 9,
       "SGE_SECRET": "h8mjUYyu4Y82WIEfpFGw8ZHrBFB7CbVmyPOu55Us",
+      "DIGBANG_IM": "http://dhim.digbang.com/api/auth/authorization",
       "DH_MAILING_URL": "https://dev.digitalhouse.com/mailing/v1/leads"
     },
     "error_file": "./log/error.log",

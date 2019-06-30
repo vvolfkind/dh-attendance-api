@@ -41,7 +41,7 @@ const getToken = () => {
         }
     }
     
-    return request.post('http://dhim.digbang.com/api/auth/authorization', 
+    return request.post(process.env.DIGBANG_IM, 
     {
         form: {
             grantType: 'client_credentials',
