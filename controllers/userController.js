@@ -55,13 +55,13 @@ const register = async (req, res) => {
       throw new Error(response.error);
     }
 
-    // let alumnee = await SGE(email);
+    let alumnee = await SGE(email);
 
-    // if (!alumnee) {
-    //   response.error =
-    //     "Email no registrado. Asegurate que sea el que solemos contactarte. Si pensas que hay un error, comunicate con el departamento de Alumnos.";
-    //   throw new Error(response.error);
-    // }
+    if (!alumnee) {
+      response.error =
+        "Email no registrado. Asegurate que sea el que solemos contactarte. Si pensas que hay un error, comunicate con el departamento de Alumnos.";
+      throw new Error(response.error);
+    }
 
     let role = 1;
 
@@ -175,20 +175,24 @@ const resetVerificationToken = async (req, res) => {
 };
 
 const passwordReset = async (req, res) => {
-  const email = req.query.email;
-  const token = req.query.token;
+  const token = req.body.token;
+  const salt = await bcrypt.genSalt(10);
   const response = {};
 
   try {
     const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-    if(!decoded) throw new Error;
 
     const user = await User.findById(decoded.user.id);
-    if(!user) throw new Error;
 
-    if(user.email === email) {
-      res.set('x-auth', token);
-      return res.redirect(301, "http://localhost:4080/attendance/reset");
+    if(decoded && user) {
+
+      await User.update({ _id: decoded.user.id }, {
+        password: await bcrypt.hash(req.body.password, salt)
+      });
+      response.code = 200;
+      response.message = "ok";
+      respond(res, response);
+
     } else {
       throw new Error;
     }
