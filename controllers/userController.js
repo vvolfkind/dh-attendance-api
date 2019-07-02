@@ -175,7 +175,7 @@ const resetVerificationToken = async (req, res) => {
 };
 
 const passwordReset = async (req, res) => {
-  const token = req.body.token;
+  const token = req.body.jwt;
   const salt = await bcrypt.genSalt(10);
   const response = {};
 
@@ -185,12 +185,11 @@ const passwordReset = async (req, res) => {
     const user = await User.findById(decoded.user.id);
 
     if(decoded && user) {
-
       await User.update({ _id: decoded.user.id }, {
         password: await bcrypt.hash(req.body.password, salt)
       });
       response.code = 200;
-      response.message = "ok";
+      response.data = "ok";
       respond(res, response);
 
     } else {
