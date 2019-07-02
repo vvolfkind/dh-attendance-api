@@ -14,7 +14,7 @@ module.exports = (express) => {
 
   router.get('/reset', userController.passwordResetRequest);
 
-  router.get('/reset/handler', userController.passwordReset);
+  router.post('/reset/handler', userController.passwordReset);
 
   return router;
 
