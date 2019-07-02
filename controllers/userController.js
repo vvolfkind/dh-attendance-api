@@ -185,11 +185,14 @@ const passwordReset = async (req, res) => {
     const user = await User.findById(decoded.user.id);
 
     if(decoded && user) {
-      await User.update({ _id: decoded.user.id }, {
-        password: await bcrypt.hash(req.body.password, salt)
-      });
+      let hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+      await User.updateOne({ _id: user._id }, { $set: { password: hashedPassword }});
+      await user.save();
+
       response.code = 200;
       response.data = "ok";
+
       respond(res, response);
 
     } else {
