@@ -55,13 +55,13 @@ const register = async (req, res) => {
       throw new Error(response.error);
     }
 
-    let alumnee = await SGE(email);
+    // let alumnee = await SGE(email);
 
-    if (!alumnee) {
-      response.error =
-        "Email no registrado. Asegurate que sea el que solemos contactarte. Si pensas que hay un error, comunicate con el departamento de Alumnos.";
-      throw new Error(response.error);
-    }
+    // if (!alumnee) {
+    //   response.error =
+    //     "Email no registrado. Asegurate que sea el que solemos contactarte. Si pensas que hay un error, comunicate con el departamento de Alumnos.";
+    //   throw new Error(response.error);
+    // }
 
     let role = 1;
 
