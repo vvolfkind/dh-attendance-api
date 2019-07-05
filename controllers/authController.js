@@ -15,6 +15,7 @@ const authenticate = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
+      console.error("Login fail. I recieved: ", email, password);
       response.message = "Email o password incorrectos";
       throw new Error(response.message);
     } else if (user.isVerified == false) {
@@ -26,6 +27,7 @@ const authenticate = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
+      console.error('Password match error: ', isMatch)
       response.message = "Email o password incorrectos.";
       throw new Error(response.message);
     }
@@ -33,6 +35,7 @@ const authenticate = async (req, res) => {
     const qrCode = await QRCode.findOne({ _userId: user._id });
 
     if (!qrCode) {
+      console.error("QR Not Found: ", qrCode);
       response.message = "Error en el servidor";
       throw new Error(response.message);
     }
